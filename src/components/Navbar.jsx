@@ -5,6 +5,10 @@ import styled from "styled-components";
 import { mobile } from "../responsive";
 import { Link } from 'react-router-dom';
 
+import AuthButton from './AuthButton';
+import AuthenticatedNav from './AuthNavbar';
+
+
 const Container = styled.div`
   height: 60px;
   ${mobile({ height: "50px" })}
@@ -82,8 +86,14 @@ const Navbar = () => {
           <Logo><Link to='/' style={{ textDecoration: 'none' }}>SHOP</Link></Logo>
         </Center>
         <Right>
-          <MenuItem><Link to='/register' style={{ textDecoration: 'none' }}>REGISTER</Link></MenuItem>
-          <MenuItem><Link to='/login' style={{ textDecoration: 'none' }}>SIGN IN</Link></MenuItem>
+          {/* <MenuItem><Link to='/register' style={{ textDecoration: 'none' }}>REGISTER</Link></MenuItem>
+          <MenuItem><Link to='/login' style={{ textDecoration: 'none' }}>SIGN IN</Link></MenuItem> */}
+          <MenuItem>
+            <AuthenticatedNav></AuthenticatedNav>
+          </MenuItem>
+          <MenuItem>
+            <AuthButton></AuthButton>
+          </MenuItem>
           <MenuItem>
           <Link to='/cart' style={{ textDecoration: 'none' }}>
             <Badge badgeContent={2} color="primary">

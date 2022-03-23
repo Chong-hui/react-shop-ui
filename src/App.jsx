@@ -6,6 +6,9 @@ import Login from "./pages/Login";
 import Cart from "./pages/Cart";
 import {BrowserRouter as Router,Switch,Route,Redirect} from "react-router-dom";
 
+import AuthOnly from './pages/AuthOnly';
+import ProtectedRoute from './auth/ProtectedRoute';
+
 const App = () => {
   return(
   <Router>
@@ -33,6 +36,7 @@ const App = () => {
         <Route path="/productlists">
           <ProductList />
         </Route>
+        <ProtectedRoute path='/authOnly' component={AuthOnly} />
       </Switch>
     </div>
   </Router>
