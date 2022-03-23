@@ -8,6 +8,7 @@ import {BrowserRouter as Router,Switch,Route,Redirect} from "react-router-dom";
 
 import AuthOnly from './pages/AuthOnly';
 import ProtectedRoute from './auth/ProtectedRoute';
+import Checkout from "./pages/Checkout";
 
 const App = () => {
   return(
@@ -35,6 +36,9 @@ const App = () => {
         </Route>
         <Route path="/productlists">
           <ProductList />
+        </Route>
+        <Route path="/checkout">
+          <Checkout />
         </Route>
         <ProtectedRoute path='/authOnly' component={AuthOnly} />
       </Switch>

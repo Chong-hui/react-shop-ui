@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { Add, Remove } from "@material-ui/icons";
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
@@ -5,8 +6,10 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
 import ScrollToTop from "react-scroll-to-top";
-import { Link } from 'react-router-dom';
-
+import { Link } from "react-router-dom";
+import CheckoutForm from "../components/CheckoutForm";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -49,7 +52,6 @@ const Bottom = styled.div`
   display: flex;
   justify-content: space-between;
   ${mobile({ flexDirection: "column" })}
-
 `;
 
 const Info = styled.div`
@@ -155,7 +157,21 @@ const Button = styled.button`
   font-weight: 600;
 `;
 
+const Modal = styled.div`
+  background-color: white;
+  width: 400px;
+  height: 500px;
+  padding: 50px;
+  position: absolute;
+  margin: 0 auto;
+`;
+
 const Cart = () => {
+  const [amount, setAmount] = useState(0);
+  useEffect(() => {
+    setAmount(100)
+  })
+
   return (
     <Container>
       <ScrollToTop smooth />
@@ -164,7 +180,11 @@ const Cart = () => {
       <Wrapper>
         <Title>YOUR BAG</Title>
         <Top>
-          <TopButton><Link to='/productlists' style={{ textDecoration: 'none' }}>CONTINUE SHOPPING</Link></TopButton>
+          <TopButton>
+            <Link to="/productlists" style={{ textDecoration: "none" }}>
+              CONTINUE SHOPPING
+            </Link>
+          </TopButton>
           <TopTexts>
             <TopText>Shopping Bag(2)</TopText>
             <TopText>Your Wishlist (0)</TopText>
@@ -243,7 +263,13 @@ const Cart = () => {
               <SummaryItemText>Total</SummaryItemText>
               <SummaryItemPrice>$ 80</SummaryItemPrice>
             </SummaryItem>
-            <Button>CHECKOUT NOW</Button>
+            <Link
+              to={{
+                pathname: "/checkout",
+                state: { amount },
+              }}>
+              <Button>CHECKOUT NOW</Button>
+            </Link>
           </Summary>
         </Bottom>
       </Wrapper>
