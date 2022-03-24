@@ -7,9 +7,7 @@ import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
 import ScrollToTop from "react-scroll-to-top";
 import { Link } from "react-router-dom";
-import CheckoutForm from "../components/CheckoutForm";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
+
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -157,20 +155,12 @@ const Button = styled.button`
   font-weight: 600;
 `;
 
-const Modal = styled.div`
-  background-color: white;
-  width: 400px;
-  height: 500px;
-  padding: 50px;
-  position: absolute;
-  margin: 0 auto;
-`;
 
 const Cart = () => {
   const [amount, setAmount] = useState(0);
   useEffect(() => {
     setAmount(100)
-  })
+  }, [])
 
   return (
     <Container>
