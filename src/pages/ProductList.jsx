@@ -6,7 +6,7 @@ import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
 import { mobile } from "../responsive";
 import ScrollToTop from "react-scroll-to-top";
-import { Link } from 'react-router-dom';
+
 
 const Container = styled.div``;
 

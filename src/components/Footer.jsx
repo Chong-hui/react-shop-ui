@@ -9,7 +9,6 @@ import {
 } from "@material-ui/icons";
 import styled from "styled-components";
 import { mobile } from "../responsive";
-import { Link } from 'react-router-dom';
 
 const Container = styled.div`
   display: flex;
