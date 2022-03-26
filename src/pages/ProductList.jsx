@@ -7,7 +7,6 @@ import Footer from "../components/Footer";
 import { mobile } from "../responsive";
 import ScrollToTop from "react-scroll-to-top";
 
-
 const Container = styled.div``;
 
 const Title = styled.h1`
