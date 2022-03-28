@@ -2,6 +2,7 @@
   "name": "new",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:5240/",
   "dependencies": {
     "@auth0/auth0-react": "^1.9.0",
     "@material-ui/core": "^4.12.3",
@@ -23,6 +24,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "server": "nodemon index.js --ignore client",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
