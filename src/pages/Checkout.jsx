@@ -6,7 +6,6 @@ import CheckoutForm from "../components/CheckoutForm";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
-
 const CheckoutContainer = styled.div`
   width: 40%;
   margin: 100px auto;
@@ -24,18 +23,19 @@ export default function Checkout(props) {
   const { amount } = props.location.state;
   const [clientSecret, setClientSecret] = useState("");
   const { getAccessTokenSilently } = useAuth0();
+  const { user } = useAuth0();
 
   useEffect(async() =>  {
     //JWT Token generation
     const token = await getAccessTokenSilently();
+        
     // Create PaymentIntent as soon as the page loads
-    fetch("/stripe/create-payment-intent", {
+    fetch("/Checkout/"+encodeURIComponent(user.sub), {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ amount }),
+      }
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
