@@ -5,6 +5,10 @@ import {
 } from "@material-ui/icons";
 import styled from "styled-components";
 import { Link } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+import React, { useState, useEffect } from "react";
+import { InfinitySpin } from 'react-loader-spinner';
+import { toast } from 'react-toastify';
 
 const Info = styled.div`
   opacity: 0;
@@ -67,26 +71,90 @@ const Icon = styled.div`
   }
 `;
 
-const Product = ({ item }) => {
-  return (
+
+async function addToCart(token, userId, itemId){
+  // Create PaymentIntent as soon as the page loads
+  const res = await fetch("/cart/"+encodeURIComponent(userId), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({itemId: itemId+"", quantity: 1})
+  })
+
+  return res;
+}
+export default function Product(item) {
+  const { isAuthenticated } = useAuth0();
+  const { loginWithRedirect } = useAuth0();
+  const [token, setToken] = useState("");
+  const [isLoading, setLoading] = useState(false);
+  const { user } = useAuth0();
+
+  const { getAccessTokenSilently } = useAuth0();
+  useEffect(async() => {
+    setToken(await getAccessTokenSilently());
+  },[])
+
+  if (isLoading)
+  {
+    return (
+      <Container>
+        <InfinitySpin color="purple"/>
+      </Container>
+    )
+  }
+
+  return isAuthenticated && token != ""? (
     <Container>
       <Circle />
-      <Image src={item.img} />
+      <Image src={item.item.url} />
       <Info>
         <Icon>
-          <Link to='/product' style={{ textDecoration: 'none' }}>
-            <ShoppingCartOutlined />
+          <ShoppingCartOutlined  
+          onClick={async() => 
+          {
+            setLoading(true)
+            let res = await addToCart(token, user.sub, item.item.itemid)
+            if(res.status != 200){
+              let text = await res.text();
+              if(text){
+                toast.error(text);
+              }else{
+                  toast.error("Something went wrong with adding to your cart.");
+              }
+            }else{
+              toast.success("Item has been added to your cart");
+            }
+            setLoading(false)
+          }}/>
+        </Icon>
+        <Icon>
+          <Link to={'/product/'+item.item.itemid} style={{ textDecoration: 'none' }}>
+            <SearchOutlined />
           </Link>
         </Icon>
+      </Info>
+
+    </Container>
+  ) : 
+  (
+    <Container>
+      <Circle />
+      <Image src={item.item.url} />
+      <Info>
         <Icon>
-          <SearchOutlined />
+          <ShoppingCartOutlined  onClick={() => loginWithRedirect()}/>
         </Icon>
         <Icon>
-          <FavoriteBorderOutlined />
+          <Link to={'/product/'+item.item.itemid} style={{ textDecoration: 'none' }}>
+            <SearchOutlined />
+          </Link>
         </Icon>
       </Info>
-    </Container>
-  );
-};
 
-export default Product;
+    </Container>
+  ) 
+  ;
+};

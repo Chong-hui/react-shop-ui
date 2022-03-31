@@ -6,7 +6,7 @@ import { InfinitySpin } from 'react-loader-spinner';
 const ProtectedRoute = ({ component, ...args }) => (
   <Route
     component={withAuthenticationRequired(component, {
-      onRedirecting: () => <InfinitySpin />,
+      onRedirecting: () => <InfinitySpin color="purple"/>,
     })}
     {...args}
   />

@@ -1,4 +1,3 @@
-import { Badge } from "@material-ui/core";
 import { Search, ShoppingCartOutlined } from "@material-ui/icons";
 import React from "react";
 import styled from "styled-components";
@@ -76,11 +75,6 @@ const Navbar = () => {
     <Container>
       <Wrapper>
         <Left>
-          <Language>EN</Language>
-          <SearchContainer>
-            <Input placeholder="Search" />
-            <Search style={{ color: "gray", fontSize: 16 }} />
-          </SearchContainer>
         </Left>
         <Center>
           <Logo><Link to='/' style={{ textDecoration: 'none' }}>SHOP</Link></Logo>
@@ -88,19 +82,12 @@ const Navbar = () => {
         <Right>
           {/* <MenuItem><Link to='/register' style={{ textDecoration: 'none' }}>REGISTER</Link></MenuItem>
           <MenuItem><Link to='/login' style={{ textDecoration: 'none' }}>SIGN IN</Link></MenuItem> */}
-          <MenuItem>
-            <AuthenticatedNav></AuthenticatedNav>
-          </MenuItem>
+          <AuthenticatedNav></AuthenticatedNav>
+
           <MenuItem>
             <AuthButton></AuthButton>
           </MenuItem>
-          <MenuItem>
-          <Link to='/cart' style={{ textDecoration: 'none' }}>
-            <Badge badgeContent={2} color="primary">
-              <ShoppingCartOutlined />
-            </Badge>
-            </Link>
-          </MenuItem>
+
         </Right>
       </Wrapper>
     </Container>

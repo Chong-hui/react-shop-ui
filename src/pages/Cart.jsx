@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Add, Remove } from "@material-ui/icons";
 import styled from "styled-components";
-import Announcement from "../components/Announcement";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
@@ -166,7 +165,6 @@ const Cart = () => {
     <Container>
       <ScrollToTop smooth />
       <Navbar />
-      <Announcement />
       <Wrapper>
         <Title>YOUR BAG</Title>
         <Top>
@@ -174,12 +172,7 @@ const Cart = () => {
             <Link to="/productlists" style={{ textDecoration: "none" }}>
               CONTINUE SHOPPING
             </Link>
-          </TopButton>
-          <TopTexts>
-            <TopText>Shopping Bag(2)</TopText>
-            <TopText>Your Wishlist (0)</TopText>
-          </TopTexts>
-          <TopButton type="filled">CHECKOUT NOW</TopButton>
+          </TopButton>     
         </Top>
         <Bottom>
           <Info>
@@ -241,18 +234,11 @@ const Cart = () => {
               <SummaryItemText>Subtotal</SummaryItemText>
               <SummaryItemPrice>$ 80</SummaryItemPrice>
             </SummaryItem>
-            <SummaryItem>
-              <SummaryItemText>Estimated Shipping</SummaryItemText>
-              <SummaryItemPrice>$ 5.90</SummaryItemPrice>
-            </SummaryItem>
-            <SummaryItem>
-              <SummaryItemText>Shipping Discount</SummaryItemText>
-              <SummaryItemPrice>$ -5.90</SummaryItemPrice>
-            </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
               <SummaryItemPrice>$ 80</SummaryItemPrice>
             </SummaryItem>
+            <Info>Once Checkout your cart will be empty</Info>
             <Link
               to={{
                 pathname: "/checkout",

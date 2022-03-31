@@ -1,13 +1,14 @@
 import { Add, Remove } from "@material-ui/icons";
 import styled from "styled-components";
-import Announcement from "../components/Announcement";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import Newsletter from "../components/Newsletter";
+import AddToCart from "../components/AddToCartButton";
 import { mobile } from "../responsive";
 import ScrollToTop from "react-scroll-to-top";
-import { Link } from 'react-router-dom';
-
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { InfinitySpin } from 'react-loader-spinner';
+import { useAuth0 } from '@auth0/auth0-react';
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -105,70 +106,98 @@ const Amount = styled.span`
   margin: 0px 5px;
 `;
 
-const Button = styled.button`
-  padding: 15px;
-  border: 2px solid teal;
-  background-color: white;
-  cursor: pointer;
-  font-weight: 500;
 
-  &:hover{
-      background-color: #f8f4f4;
+
+async function addToCart(token, userId, itemId){
+  // Create PaymentIntent as soon as the page loads
+  const res = await fetch("/cart/"+encodeURIComponent(userId), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({itemId: itemId+"", quantity: 1})
+  })
+
+  return res;
+}
+
+export default function Product() {
+  const [product, setProduct] = useState([]);
+  const { isAuthenticated } = useAuth0();
+  const { loginWithRedirect } = useAuth0();
+  const [token, setToken] = useState("");
+  const [isLoading, setLoading] = useState(false);
+  const { user } = useAuth0();
+
+  const { getAccessTokenSilently } = useAuth0();
+  useEffect(async() => {
+    setToken(await getAccessTokenSilently());
+  },[])
+
+  const { id } = useParams()
+  console.log(id)
+  useEffect(async() => {
+    try {
+      setLoading(true)
+      const res = await fetch("/inventory/"+id, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+      console.log(res)
+
+      setProduct(await res.json())
+      setLoading(true)
+
+    } catch {
+      // TODO: Handle error exception
+      setLoading(false)
+
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+  if (isLoading){
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }}>
+      <InfinitySpin color="purple"/>
+    </div>);
   }
-`;
+  console.log(product)
 
-const Product = () => {
+  if (product.length === 0)
+    return null
   return (
     <Container>
       <ScrollToTop smooth />
       <Navbar />
-      <Announcement />
       <Wrapper>
         <ImgContainer>
-          <Image src="https://i.ibb.co/S6qMxwr/jean.jpg" />
+          <Image src={product[0].url} />
         </ImgContainer>
         <InfoContainer>
-          <Title>Denim Jumpsuit</Title>
-          <Desc>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-            venenatis, dolor in finibus malesuada, lectus ipsum porta nunc, at
-            iaculis arcu nisi sed mauris. Nulla fermentum vestibulum ex, eget
-            tristique tortor pretium ut. Curabitur elit justo, consequat id
-            condimentum ac, volutpat ornare.
-          </Desc>
-          <Price>$ 20</Price>
-          <FilterContainer>
-            <Filter>
-              <FilterTitle>Color</FilterTitle>
-              <FilterColor color="black" />
-              <FilterColor color="darkblue" />
-              <FilterColor color="gray" />
-            </Filter>
-            <Filter>
-              <FilterTitle>Size</FilterTitle>
-              <FilterSize>
-                <FilterSizeOption>XS</FilterSizeOption>
-                <FilterSizeOption>S</FilterSizeOption>
-                <FilterSizeOption>M</FilterSizeOption>
-                <FilterSizeOption>L</FilterSizeOption>
-                <FilterSizeOption>XL</FilterSizeOption>
-              </FilterSize>
-            </Filter>
-          </FilterContainer>
+          <Title>{product[0].name}</Title>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <Price>$ {product[0].priceperitem}</Price>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
           <AddContainer>
-            <AmountContainer>
-              <Remove />
-              <Amount>1</Amount>
-              <Add />
-            </AmountContainer>
-            <Button><Link to='/cart' style={{ textDecoration: 'none' }}>ADD TO CART</Link></Button>
+            <AddToCart itemId={id}></AddToCart>
           </AddContainer>
         </InfoContainer>
       </Wrapper>
-      <Newsletter />
       <Footer />
     </Container>
   );
 };
-
-export default Product;
