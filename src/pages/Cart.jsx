@@ -6,6 +6,9 @@ import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
 import ScrollToTop from "react-scroll-to-top";
 import { Link } from "react-router-dom";
+import { useAuth0 } from '@auth0/auth0-react';
+import { InfinitySpin } from 'react-loader-spinner';
+import { toast } from 'react-toastify';
 
 const Container = styled.div``;
 
@@ -152,15 +155,107 @@ const Button = styled.button`
   background-color: black;
   color: white;
   font-weight: 600;
-`;
+`;  
 
-
-const Cart = () => {
+export default function Cart() {
   const [amount, setAmount] = useState(0);
-  useEffect(() => {
-    setAmount(100)
-  }, [])
+  const [items, setItems] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const { getAccessTokenSilently } = useAuth0();
+  const { user } = useAuth0();
 
+  useEffect(async () => {
+    const getCart = async () => {
+        setLoading(true);
+        let token = await getAccessTokenSilently()
+
+        if (user){
+          const res = await fetch("/cart/"+encodeURIComponent(user.sub), {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+      
+          if(res.status != 200){
+            let text = await res.text();
+            if(text){
+                toast.error(text);
+            }else{
+                toast.error("Something went wrong viewing your cart");
+            }
+          }else{
+            setItems(await res.json())
+          }
+          setLoading(false)
+        }
+    }
+    getCart();
+  }, [user])
+
+  useEffect(() => {
+    console.log(items)
+    let total = 0.0;
+    items.forEach(
+      item => {
+        total+=(item.quantity*item.pricePerItem)
+      }
+    );
+    setAmount(total)
+  },[items])
+
+  if(isLoading){
+    return (  
+      <Container>
+        <ScrollToTop smooth />
+        <Navbar />
+        <Wrapper>
+          <Title>YOUR BAG</Title>
+          <Top>
+            <TopButton>
+              <Link to="/productlists" style={{ textDecoration: "none" }}>
+                CONTINUE SHOPPING
+              </Link>
+            </TopButton>     
+          </Top>
+          <Bottom>
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}>
+              <InfinitySpin color="purple"/>
+            </div>
+          </Bottom>
+          </Wrapper>
+        <Footer />
+      </Container>
+    )
+  }
+
+  if(!items || items.length == 0){
+    return (  
+      <Container>
+        <ScrollToTop smooth />
+        <Navbar />
+        <Wrapper>
+          <Title>YOUR BAG</Title>
+          <Top>
+            <TopButton>
+              <Link to="/productlists" style={{ textDecoration: "none" }}>
+                CONTINUE SHOPPING
+              </Link>
+            </TopButton>     
+          </Top>
+          <Bottom>
+            <Details>Yourt Cart is empty</Details>
+          </Bottom>
+          </Wrapper>
+        <Footer />
+      </Container>
+    )
+  }
   return (
     <Container>
       <ScrollToTop smooth />
@@ -176,73 +271,48 @@ const Cart = () => {
         </Top>
         <Bottom>
           <Info>
-            <Product>
-              <ProductDetail>
-                <Image src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1614188818-TD1MTHU_SHOE_ANGLE_GLOBAL_MENS_TREE_DASHERS_THUNDER_b01b1013-cd8d-48e7-bed9-52db26515dc4.png?crop=1xw:1.00xh;center,top&resize=480%3A%2A" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> JESSIE THUNDER SHOES
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 93813718293
-                  </ProductId>
-                  <ProductColor color="black" />
-                  <ProductSize>
-                    <b>Size:</b> 37.5
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>2</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>$ 30</ProductPrice>
-              </PriceDetail>
-            </Product>
-            <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src="https://i.pinimg.com/originals/2d/af/f8/2daff8e0823e51dd752704a47d5b795c.png" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> HAKURA T-SHIRT
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 93813718293
-                  </ProductId>
-                  <ProductColor color="gray" />
-                  <ProductSize>
-                    <b>Size:</b> M
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>1</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>$ 20</ProductPrice>
-              </PriceDetail>
-            </Product>
+            {items.map(
+              item => 
+              {
+                return(
+                  <Product>
+                    <ProductDetail>
+                    <Image src={item.url} />
+                    <Details>
+                      <ProductName>
+                        <b>Product:</b> {item.name}
+                      </ProductName>
+                      <ProductId>
+                        <b>ID:</b> {item.itemId}
+                      </ProductId>
+                    </Details>
+                    </ProductDetail>
+                    <PriceDetail>
+                      <ProductAmountContainer>
+                        <ProductAmount>{item.quantity}</ProductAmount>
+                      </ProductAmountContainer>
+                      <ProductPrice>$ {item.pricePerItem}</ProductPrice>
+                    </PriceDetail>
+                  </Product>
+                )
+              }
+            )}
           </Info>
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>$ 80</SummaryItemPrice>
+              <SummaryItemPrice>$ {amount}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>$ 80</SummaryItemPrice>
+              <SummaryItemPrice>$ {amount}</SummaryItemPrice>
             </SummaryItem>
             <Info>Once Checkout your cart will be empty</Info>
             <Link
               to={{
                 pathname: "/checkout",
-                state: { amount },
+                amount: {amount},
               }}>
               <Button>CHECKOUT NOW</Button>
             </Link>
@@ -254,4 +324,3 @@ const Cart = () => {
   );
 };
 
-export default Cart;
