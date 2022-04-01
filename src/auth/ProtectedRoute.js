@@ -8,7 +8,6 @@ const ProtectedRoute = ({ component, ...args }) => (
     component={withAuthenticationRequired(component, {
       onRedirecting: () => <InfinitySpin color="purple"/>,
     })}
-    {...args}
   />
 );
 

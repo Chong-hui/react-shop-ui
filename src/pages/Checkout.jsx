@@ -29,7 +29,12 @@ export default function Checkout( prop ) {
   const [clientSecret, setClientSecret] = useState("");
   const { getAccessTokenSilently } = useAuth0();
   const { user } = useAuth0();
+  const { loginWithRedirect } = useAuth0();
+  const { isAuthenticated } = useAuth0();
   let amount = 0;
+  if(!isAuthenticated){
+    loginWithRedirect();
+  }
   try{
     amount = prop.location.amount.amount;
     console.log(prop.location.amount.amount)

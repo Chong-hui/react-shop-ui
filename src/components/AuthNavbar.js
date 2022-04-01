@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { ShoppingCartOutlined } from "@material-ui/icons";
+import { ShoppingCartOutlined, LocalShippingOutlined} from "@material-ui/icons";
 import { Badge } from "@material-ui/core";
 import styled from "styled-components";
 import { mobile } from "../responsive";
@@ -26,6 +26,11 @@ const AuthenticatedNav = () => {
         <MenuItem>
           <Link to='/cart' style={{ textDecoration: 'none' }}>
             <ShoppingCartOutlined />
+          </Link>
+        </MenuItem>
+        <MenuItem>
+          <Link to='/order' style={{ textDecoration: 'none' }}>
+            <LocalShippingOutlined/>
           </Link>
         </MenuItem>
 

@@ -5,6 +5,8 @@
   "proxy": "http://5.161.50.89:7331/",
   "dependencies": {
     "@auth0/auth0-react": "^1.9.0",
+    "@coreui/coreui": "^4.1.3",
+    "@coreui/react": "^4.1.2",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@stripe/react-stripe-js": "^1.7.0",

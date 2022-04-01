@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Add, Remove } from "@material-ui/icons";
 import styled from "styled-components";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
@@ -37,15 +36,6 @@ const TopButton = styled.button`
   background-color: ${(props) =>
     props.type === "filled" ? "black" : "transparent"};
   color: ${(props) => props.type === "filled" && "white"};
-`;
-
-const TopTexts = styled.div`
-  ${mobile({ display: "none" })}
-`;
-const TopText = styled.span`
-  text-decoration: underline;
-  cursor: pointer;
-  margin: 0px 10px;
 `;
 
 const Bottom = styled.div`
@@ -163,32 +153,37 @@ export default function Cart() {
   const [isLoading, setLoading] = useState(false);
   const { getAccessTokenSilently } = useAuth0();
   const { user } = useAuth0();
+  const { isAuthenticated } = useAuth0();
+  const { loginWithRedirect } = useAuth0();
 
   useEffect(async () => {
     const getCart = async () => {
         setLoading(true);
-        let token = await getAccessTokenSilently()
-
-        if (user){
-          const res = await fetch("/cart/"+encodeURIComponent(user.sub), {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-      
-          if(res.status != 200){
-            let text = await res.text();
-            if(text){
-                toast.error(text);
+        let token = "";
+        if(isAuthenticated){
+          token = await getAccessTokenSilently();
+          if (user){
+            const res = await fetch("/cart/"+encodeURIComponent(user.sub), {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
+        
+            if(res.status != 200){
+              let text = await res.text();
+              if(text){
+                  toast.error(text);
+              }else{
+                  toast.error("Something went wrong viewing your cart");
+              }
             }else{
-                toast.error("Something went wrong viewing your cart");
+              setItems(await res.json())
+              setLoading(false)
             }
-          }else{
-            setItems(await res.json())
+            setLoading(false)
           }
-          setLoading(false)
         }
     }
     getCart();

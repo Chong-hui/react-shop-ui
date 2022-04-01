@@ -2,6 +2,7 @@ import Product from "./pages/Product";
 import Home from "./pages/Home";
 import ProductList from "./pages/ProductList";
 import Cart from "./pages/Cart";
+import Order from "./pages/Order";
 import {BrowserRouter as Router,Switch,Route} from "react-router-dom";
 
 import ProtectedRoute from "./auth/ProtectedRoute";
@@ -18,15 +19,15 @@ const App = () => {
           <Route exact path="/">
             <Home />
           </Route>
-          <ProtectedRoute path="/cart">
-            <Cart />
-          </ProtectedRoute>
           <Route path="/product/:id">
             <Product />
           </Route>
           <Route path="/productlists">
             <ProductList />
           </Route>
+
+          <ProtectedRoute exact path="/Cart" component={Cart} />
+          <ProtectedRoute exact path="/order" component={Order} />
           <ProtectedRoute exact path="/checkout" component={Checkout} />
           <ProtectedRoute path="/checkout/complete" component={CheckoutComplete} />
         </Switch>
