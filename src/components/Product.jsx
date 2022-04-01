@@ -94,10 +94,12 @@ export default function Product(item) {
 
   const { getAccessTokenSilently } = useAuth0();
   useEffect(async() => {
+    setLoading(true)
     if(isAuthenticated){
       setToken(await getAccessTokenSilently());
     }
-  },[])
+    setLoading(false)
+  },[isAuthenticated])
 
   if (isLoading)
   {
