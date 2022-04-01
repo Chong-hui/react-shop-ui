@@ -71,7 +71,17 @@ const ProductDetail = styled.div`
   display: flex;
 `;
 
-const ProductName = styled.span``;
+const Button = styled.button`
+  padding: 15px;
+  border: 2px solid teal;
+  background-color: white;
+  cursor: pointer;
+  font-weight: 500;
+  margin-right 20px;
+  &:hover{
+      background-color: #f8f4f4;
+  }
+`;
 
 const ProductId = styled.span``;
 const PriceDetail = styled.div`
@@ -94,11 +104,6 @@ const ProductAmount = styled.div`
   ${mobile({ margin: "5px 15px" })}
 `;
 
-const ProductPrice = styled.div`
-  font-size: 30px;
-  font-weight: 200;
-  ${mobile({ marginBottom: "20px" })}
-`;
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
@@ -106,17 +111,43 @@ const Order = () => {
   const { user } = useAuth0();
   const { isAuthenticated } = useAuth0();
   const { getAccessTokenSilently } = useAuth0();
+  const [token, setToken] = useState(false);
+  const [isButtonLoading, setButtonLoading] = useState(false);
+  const [orderIdLoading, setOrderLoading] = useState("");
+  function updateOrder(orderId){
+    if(isAuthenticated){
+      setOrderLoading(orderId)
+      setButtonLoading(true)
+      if (user != undefined){
+          fetch("/UpdateOrder/receive/"+orderId, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+          }).then( res => {
+            setButtonLoading(false)
+            setOrderLoading("")
+            window.location.reload()
+          }     
+          ).catch(err=>{
+            toast.error(err);
+            setButtonLoading(false)
+            setOrderLoading("")
+          });
+      }
+    }
+  }
 
   useEffect(async() => {
-
     if(isAuthenticated){
         setLoading(true)
-        let token = await getAccessTokenSilently();
+        let t = await getAccessTokenSilently();
         if (user != undefined){
             const res = await fetch("/order/userid/"+encodeURIComponent(user.sub), {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${t}`,
                 "Content-Type": "application/json",
             },
             });
@@ -129,7 +160,8 @@ const Order = () => {
                 toast.error("Something went wrong viewing your Order");
             }
             }else{
-                setOrders(await res.json())
+              setToken(t);
+              setOrders(await res.json())
             }
             setLoading(false)
         }
@@ -208,7 +240,7 @@ const Order = () => {
               order => 
               {
                 return(
-                    <CAccordion>
+                    <CAccordion flush>    
                         <CAccordionItem itemKey={order.orderid}>
                             <CAccordionHeader>
                                     <ProductDetail>
@@ -219,8 +251,16 @@ const Order = () => {
                                         </Details>
                                     </ProductDetail>
                                     <ProductAmountContainer>
-                                            <ProductAmount>Status: {order.orderstatus}</ProductAmount>
+                                            <ProductAmount>Status: {order.orderstatus}</ProductAmount>     
                                     </ProductAmountContainer>
+                                    {
+                                      isButtonLoading&&orderIdLoading === order.orderid?<InfinitySpin color="purple"/>:""
+                                    }
+                                    {
+                                      order.orderstatus === "Sent" && !isButtonLoading?
+                                        <Button onClick={() => updateOrder(order.orderid)}>
+                                        I have recieved my order</Button>:""
+                                    }
                             </CAccordionHeader>
                             <CAccordionBody>
                                 {order.details.map(
@@ -244,6 +284,7 @@ const Order = () => {
                                 )}
                             </CAccordionBody>
                         </CAccordionItem>
+                       
                     </CAccordion>
    
                 )

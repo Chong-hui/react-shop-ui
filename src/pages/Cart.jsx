@@ -197,7 +197,7 @@ export default function Cart() {
         total+=(item.quantity*item.pricePerItem)
       }
     );
-    setAmount(total)
+    setAmount(total.toFixed(2))
   },[items])
 
   if(isLoading){
