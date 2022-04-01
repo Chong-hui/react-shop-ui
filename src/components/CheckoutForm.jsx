@@ -60,12 +60,8 @@ const CheckoutForm = (props) => {
     }
 
     setIsLoading(true);
-    let url = window.location.hostname+"/checkout/complete";
-    if (location.protocol !== 'https:') {
-      url = "https://"+url
-    }else{
-      url = "http://"+url
-    }
+    let url = window.location.protocol+"//"+window.location.hostname+"/checkout/complete";
+    console.log(url)
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
