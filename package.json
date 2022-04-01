@@ -2,7 +2,7 @@
   "name": "new",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://5.161.50.89:7331/",
+  "proxy": "https://gateway.esdshop-t1g4.site/",
   "dependencies": {
     "@auth0/auth0-react": "^1.9.0",
     "@coreui/coreui": "^4.1.3",
