@@ -60,12 +60,17 @@ const CheckoutForm = (props) => {
     }
 
     setIsLoading(true);
-
+    let url = window.location.hostname+"/checkout/complete";
+    if (location.protocol !== 'https:') {
+      url = "https://"+url
+    }else{
+      url = "http://"+url
+    }
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: window.location.hostname+"/checkout/complete",
+        return_url: url,
       },
     });
 
