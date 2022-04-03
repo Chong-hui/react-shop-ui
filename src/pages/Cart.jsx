@@ -150,6 +150,8 @@ const Button = styled.button`
 export default function Cart() {
   const [amount, setAmount] = useState(0);
   const [items, setItems] = useState([]);
+  const [naItems, setNaItems] = useState([]);
+
   const [isLoading, setLoading] = useState(false);
   const { getAccessTokenSilently } = useAuth0();
   const { user } = useAuth0();
@@ -179,7 +181,18 @@ export default function Cart() {
                   toast.error("Something went wrong viewing your cart");
               }
             }else{
-              setItems(await res.json())
+              let allItems = await res.json();
+              let i = []
+              let na = []
+              allItems.forEach(item => {
+                if(item.isRemoved){
+                  na.push(item)
+                }else{
+                  i.push(item)
+                }
+              })
+              setItems(i)
+              setNaItems(na)
               setLoading(false)
             }
             setLoading(false)
@@ -229,7 +242,7 @@ export default function Cart() {
     )
   }
 
-  if(!items || items.length == 0){
+  if(!items || (items.length == 0 && naItems.length == 0)){
     return (  
       <Container>
         <ScrollToTop smooth />
@@ -266,6 +279,34 @@ export default function Cart() {
         </Top>
         <Bottom>
           <Info>
+            {naItems.map(
+              item => 
+              {
+                return(
+                  <Product>
+                    <ProductDetail>
+                    <Image src={item.url} />
+                    <Details>
+                      <ProductName>
+                        <b>Item is no longer available and has been removed from your cart</b>
+                        <br/>
+                        <b>Product:</b> {item.name}
+                      </ProductName>
+                      <ProductId>
+                        <b>ID:</b> {item.itemId}
+                      </ProductId>
+                    </Details>
+                    </ProductDetail>
+                    <PriceDetail>
+                      <ProductAmountContainer>
+                        <ProductAmount>{item.quantity}</ProductAmount>
+                      </ProductAmountContainer>
+                      <ProductPrice>$ {item.pricePerItem}</ProductPrice>
+                    </PriceDetail>
+                  </Product>
+                )
+              }
+            )}
             {items.map(
               item => 
               {
@@ -294,6 +335,8 @@ export default function Cart() {
             )}
           </Info>
           <Summary>
+          { items.length > 0 ? 
+            <>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
@@ -311,7 +354,9 @@ export default function Cart() {
               }}>
               <Button>CHECKOUT NOW</Button>
             </Link>
-          </Summary>
+            </>
+          :""}  
+        </Summary>
         </Bottom>
       </Wrapper>
       <Footer />
