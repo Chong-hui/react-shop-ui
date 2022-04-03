@@ -60,7 +60,13 @@ const CheckoutForm = (props) => {
     }
 
     setIsLoading(true);
-    let url = window.location.protocol+"//"+window.location.hostname+"/checkout/complete";
+    let url = "";
+    if(window.location.hostname == "localhost"){
+      url = window.location.protocol+"//"+window.location.hostname+":7335"+"/checkout/complete";
+
+    }else{
+      url = window.location.protocol+"//"+window.location.hostname+"/checkout/complete";
+    }
     console.log(url)
     const { error } = await stripe.confirmPayment({
       elements,
